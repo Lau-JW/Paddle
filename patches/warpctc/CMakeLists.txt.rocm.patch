@@ -7,5 +7,21 @@
 +    list(APPEND CMAKE_PREFIX_PATH ${ROCM_PATH})
      add_definitions(-DWARPCTC_WITH_HIP)
      include(hip)
-     include(UseHIP)
  endif(WITH_ROCM)
+
+@@ -125,8 +126,15 @@ IF (WITH_GPU OR WITH_ROCM)
+  CUDA_ADD_LIBRARY(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
+  ELSE()
+ IF (WITH_GPU)
+  CUDA_ADD_LIBRARY(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
+  ELSE()
+- HIP_ADD_LIBRARY(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
+- TARGET_LINK_LIBRARIES(warpctc PUBLIC ${ROCM_HIPRTC_LIB})
++ enable_language(HIP)
++ add_library(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
++ set_source_files_properties(
++   src/ctc_entrypoint.cu src/reduce.cu
++   PROPERTIES LANGUAGE HIP)
++ target_link_libraries(warpctc PUBLIC ${ROCM_HIPRTC_LIB})
+  ENDIF()
+  endif(WIN32)
