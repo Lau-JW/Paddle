@@ -35,4 +35,6 @@ ExternalProject_Add(
 # update include dir and set cccl first for using
 include_directories(BEFORE "${CCCL_SOURCE_DIR}/cub")
 include_directories(BEFORE "${CCCL_SOURCE_DIR}/libcudacxx/include")
-include_directories(BEFORE "${CCCL_SOURCE_DIR}/thrust")
+if(WITH_GPU)
+  include_directories(BEFORE "${CCCL_SOURCE_DIR}/thrust")
+endif()

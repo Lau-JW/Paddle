@@ -7,4 +7,5 @@
 +    list(APPEND CMAKE_PREFIX_PATH ${ROCM_PATH})
      add_definitions(-DWARPRNNT_WITH_HIP)
      include(hip)
+    
  endif(WITH_ROCM)

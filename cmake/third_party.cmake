@@ -506,7 +506,25 @@ if(WITH_GPU)
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${SRC_DIR} ${DST_DIR2}
       COMMENT "Copy directory from ${SRC_DIR} to ${DST_DIR1} and ${DST_DIR2}")
   endif()
+
+
 endif()
+
+
+
+
+
+
+
+
+
+
+if(WITH_ROCM)
+  # ROCm 7+ Thrust needs vendored CCCL headers (cuda/__cccl_config).
+  include(external/cccl)
+  add_definitions(-DPADDLE_WITH_CCCL)
+endif()
+
 
 if(WITH_XPU)
   include(external/xpu) # download, build, install xpu
