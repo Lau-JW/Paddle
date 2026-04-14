@@ -26,7 +26,7 @@ endif()
 set(CMAKE_MODULE_PATH "${HIP_PATH}/cmake" ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH "${ROCM_PATH}" ${CMAKE_PREFIX_PATH})
 
-find_package(HIP REQUIRED)
+find_package(HIP MODULE REQUIRED)
 include_directories(${ROCM_PATH}/include)
 message(STATUS "HIP version: ${HIP_VERSION}")
 message(STATUS "HIP_CLANG_PATH: ${HIP_CLANG_PATH}")
