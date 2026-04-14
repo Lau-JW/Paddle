@@ -28,6 +28,21 @@ set(CMAKE_PREFIX_PATH "${ROCM_PATH}" ${CMAKE_PREFIX_PATH})
 
 find_package(HIP MODULE REQUIRED)
 include_directories(${ROCM_PATH}/include)
+
+# ROCm 7's system Thrust expects CCCL's libcudacxx headers to provide
+# <cuda/__cccl_config>. Ensure it's on the include path for host compilation
+# without overriding ROCm's own Thrust headers.
+set(PADDLE_CCCL_LIBCUDACXX_INCLUDE_DIR
+    "${PADDLE_SOURCE_DIR}/third_party/cccl/libcudacxx/include")
+if(EXISTS "${PADDLE_CCCL_LIBCUDACXX_INCLUDE_DIR}/cuda/__cccl_config")
+  include_directories(BEFORE "${PADDLE_CCCL_LIBCUDACXX_INCLUDE_DIR}")
+else()
+  message(
+    WARNING
+      "CCCL libcudacxx header cuda/__cccl_config not found at ${PADDLE_CCCL_LIBCUDACXX_INCLUDE_DIR}. "
+      "ROCm Thrust may fail to compile; please init submodule third_party/cccl."
+  )
+endif()
 message(STATUS "HIP version: ${HIP_VERSION}")
 message(STATUS "HIP_CLANG_PATH: ${HIP_CLANG_PATH}")
 
