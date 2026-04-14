@@ -174,15 +174,33 @@ set(HIP_CLANG_FLAGS ${HIP_CXX_FLAGS})
 # Ask hcc to generate device code during compilation so we can use
 # host linker to link.
 list(APPEND HIP_HCC_FLAGS -fno-gpu-rdc)
-list(APPEND HIP_HCC_FLAGS --offload-arch=gfx906) # Z100 (ZIFANG)
-list(APPEND HIP_HCC_FLAGS --offload-arch=gfx926) # K100 (KONGING)
-list(APPEND HIP_HCC_FLAGS --offload-arch=gfx928) # K100_AI (KONGING_AI)
-list(APPEND HIP_HCC_FLAGS --offload-arch=gfx936) # BW1000 (BOWEN)
 list(APPEND HIP_CLANG_FLAGS -fno-gpu-rdc)
-list(APPEND HIP_CLANG_FLAGS --offload-arch=gfx906) # Z100 (ZIFANG)
-list(APPEND HIP_CLANG_FLAGS --offload-arch=gfx926) # K100 (KONGING)
-list(APPEND HIP_CLANG_FLAGS --offload-arch=gfx928) # K100_AI (KONGING_AI)
-list(APPEND HIP_CLANG_FLAGS --offload-arch=gfx936) # BW1000 (BOWEN)
+
+# Select AMDGPU targets.
+# - Prefer user-provided `AMDGPU_TARGETS` (CMake var), then env `AMDGPU_TARGETS`,
+#   then env `HCC_AMDGPU_TARGET` (commonly used by ROCm), else default to gfx906.
+set(PADDLE_AMDGPU_TARGETS "")
+if(DEFINED AMDGPU_TARGETS AND NOT "${AMDGPU_TARGETS}" STREQUAL "")
+  set(PADDLE_AMDGPU_TARGETS "${AMDGPU_TARGETS}")
+elseif(DEFINED ENV{AMDGPU_TARGETS} AND NOT "$ENV{AMDGPU_TARGETS}" STREQUAL "")
+  set(PADDLE_AMDGPU_TARGETS "$ENV{AMDGPU_TARGETS}")
+elseif(DEFINED ENV{HCC_AMDGPU_TARGET} AND NOT "$ENV{HCC_AMDGPU_TARGET}" STREQUAL "")
+  set(PADDLE_AMDGPU_TARGETS "$ENV{HCC_AMDGPU_TARGET}")
+else()
+  set(PADDLE_AMDGPU_TARGETS "gfx906")
+endif()
+
+# Normalize separators: comma/space -> ';' for CMake lists.
+string(REPLACE "," ";" PADDLE_AMDGPU_TARGETS "${PADDLE_AMDGPU_TARGETS}")
+string(REPLACE " " ";" PADDLE_AMDGPU_TARGETS "${PADDLE_AMDGPU_TARGETS}")
+list(REMOVE_ITEM PADDLE_AMDGPU_TARGETS "")
+list(REMOVE_DUPLICATES PADDLE_AMDGPU_TARGETS)
+message(STATUS "ROCm offload archs: ${PADDLE_AMDGPU_TARGETS}")
+
+foreach(_arch IN LISTS PADDLE_AMDGPU_TARGETS)
+  list(APPEND HIP_HCC_FLAGS --offload-arch=${_arch})
+  list(APPEND HIP_CLANG_FLAGS --offload-arch=${_arch})
+endforeach()
 
 if(HIP_COMPILER STREQUAL clang)
   set(hip_library_name amdhip64)
