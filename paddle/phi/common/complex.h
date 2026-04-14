@@ -57,11 +57,19 @@ struct PADDLE_ALIGN(sizeof(T) * 2) complex {
 
   using value_type = T;
 
-  complex() = default;
-  complex(const complex<T>& o) = default;
-  complex& operator=(const complex<T>& o) = default;
-  complex(complex<T>&& o) = default;
-  complex& operator=(complex<T>&& o) = default;
+  HOSTDEVICE complex() = default;
+  HOSTDEVICE complex(const complex<T>& o) : real(o.real), imag(o.imag) {}
+  HOSTDEVICE complex& operator=(const complex<T>& o) {
+    real = o.real;
+    imag = o.imag;
+    return *this;
+  }
+  HOSTDEVICE complex(complex<T>&& o) : real(o.real), imag(o.imag) {}
+  HOSTDEVICE complex& operator=(complex<T>&& o) {
+    real = o.real;
+    imag = o.imag;
+    return *this;
+  }
   ~complex() = default;
 
   HOSTDEVICE constexpr complex(T real, T imag) : real(real), imag(imag) {}
