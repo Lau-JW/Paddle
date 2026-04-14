@@ -17,11 +17,7 @@
   ELSE()
 - HIP_ADD_LIBRARY(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
 - TARGET_LINK_LIBRARIES(warpctc PUBLIC ${ROCM_HIPRTC_LIB})
-+ enable_language(HIP)
-+ add_library(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
-+ set_source_files_properties(
-+   src/ctc_entrypoint.cu src/reduce.cu
-+   PROPERTIES LANGUAGE HIP)
++ hip_add_library(warpctc ${WARPCTC_SHARED} src/ctc_entrypoint.cu src/reduce.cu)
 + target_link_libraries(warpctc PUBLIC ${ROCM_HIPRTC_LIB})
   ENDIF()
   endif(WIN32)

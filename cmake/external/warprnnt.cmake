@@ -44,8 +44,7 @@ endif()
 if(WITH_ROCM)
   set(WARPRNNT_PATCH_ROCM_COMMAND
       patch -p1 <
-      ${PADDLE_SOURCE_DIR}/patches/warprnnt/CMakeLists.txt.rocm.patch && patch
-      -p1 < ${PADDLE_SOURCE_DIR}/patches/warprnnt/hip.cmake.patch)	
+      ${PADDLE_SOURCE_DIR}/patches/warprnnt/CMakeLists.txt.rocm.patch)
 endif()
 if(NOT WIN32 AND WITH_GPU)
   if(${CMAKE_CUDA_COMPILER_VERSION} LESS 12.0 AND ${CMAKE_CXX_COMPILER_VERSION}
@@ -146,6 +145,7 @@ if(WITH_ROCM)
       "-DROCM_PATH=${ROCM_PATH}"
       "-DHIP_ROOT_DIR=${ROCM_PATH}"
       "-DCMAKE_PREFIX_PATH=${WARPRNNT_ROCM_CMAKE_PREFIX_PATH}"
+      "-DCMAKE_MODULE_PATH=${ROCM_PATH}/lib/cmake/hip"
       "-DROCM_HIPRTC_LIB=${WARPRNNT_ROCM_HIPRTC_LIB}")
 endif()
 
